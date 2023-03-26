@@ -1,6 +1,6 @@
 ##  README
 *   . . .
-*   a rexx external function package providing cryptographic function
+*   a rexx external function package providing cryptographic functions
 *   . . .
 * * *
 
@@ -26,8 +26,8 @@
 
 ##  how to get it
 *   . . .
-*   git clone https://github.com/atncsj6h/rxcrypt
-*   git@github.com:atncsj6h/rxcrypt
+*   `git clone https://github.com/atncsj6h/rxcrypt`
+*   `git@github.com:atncsj6h/rxcrypt`
 *   . . .
 * * *
 
@@ -50,24 +50,23 @@
 *   for f in <the source dir>/testVectors/CBC* ; do rexx rxcbc ${f}; done;
 *   for f in <the source dir>/testVectors/ECB* ; do rexx rxecb ${f}; done;
 *   . . .
-*   work in progress to standrdize the reporting of the test suite
+*   work in progress to standardize the reporting of the test suite
 * * *
 
-##  supported environments
+##  fully supported environments
 *   . . .
 *   macOS[X] Big Sur, High Sierra
 *   tested and working on
 *   arm-native intel-native
 *   arm-universal intel-universal, binaries cross tested
 *
-*   . . .
 * * *
 
 ##  dependencies
 *   CMake at least 3.25
 *
-*   right now the build system depends on the cmToolKit
-*   working in order to make the build system independent from my tools
+*   working in progress to make the build system independent from external tools
+*   might lower the minimum cmake version needed
 * * *
 
 ##  nice to have
