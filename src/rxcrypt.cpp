@@ -137,7 +137,8 @@ char    rcChar[16];
     if( ( (uint32_t)SL(iBuffer) % AES_BLOCK_SIZE ) != 0  )
     {
         sprintf(rcChar, "%d", -1002);
-        vPut( RC, rcChar, strlen(rcChar) );
+        // vPut( RC, rcChar, strlen(rcChar) );
+        context->SetContextVariable( "RC", context->NewString(rcChar, strlen(rcChar)));
         return (RexxObjectPtr)context->NullString();
     }
 
