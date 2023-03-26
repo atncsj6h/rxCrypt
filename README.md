@@ -53,27 +53,25 @@
 *   work in progress to standardize the reporting of the test suite
 * * *
 
-##  fully supported environments
+##  tested environments
 *   . . .
-*   macOS[X] Big Sur, High Sierra
+*   macOS[X] Big Sur
 *   tested and working on
 *   arm-native intel-native
-*   arm-universal intel-universal, binaries cross tested
 *
 * * *
 
 ##  dependencies
-*   CMake at least 3.25
-*
-*   working in progress to make the build system independent from external tools
-*   might lower the minimum cmake version needed
+*   ...
 * * *
 
 ##  nice to have
 *   . . .
-*   ccache  - a C/C++ compiler cache
-*   ninja   - alternative for make/gmake ( macOS/Linux/FreeBSD )
-*   pkgconf - to retrieve the metainformation of a package/library
+* * *
+##  changes
+*   . . .
+*   removed the CMAKE requirement
+*   implemented a very simple makefile
 *   . . .
 * * *
 
