@@ -1,5 +1,5 @@
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# Copyright Enrico Sorichetti 2021 - 2023
+# Copyright (c) 2019, 2023 Enrico Sorichetti
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file BOOST_LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
@@ -9,54 +9,36 @@ message( STATUS "CMake version  '${CMAKE_VERSION}'" )
 message( STATUS "Processing     '${CMAKE_CURRENT_LIST_FILE}'" )
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-if( CMAKE_VERSION VERSION_LESS  3.20 )
+if( CMAKE_VERSION VERSION_LESS  3.25 )
   message( FATAL_ERROR "
- CMake '3.20' or higher is required,
+ CMake '3.25' or higher is required,
  You are running '${CMAKE_VERSION}'" )
 endif()
 cmake_minimum_required( VERSION ${CMAKE_VERSION} )
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# must come before the project command
-# lowest macOS supported 10.13.6 High Sierra
-if( APPLE AND BUILD_UNIVERSAL_BINARIES )
-  set( CMAKE_OSX_DEPLOYMENT_TARGET 10.13.6 CACHE STRING  "" FORCE)
-  add_compile_options( -Wunguarded-availability )
-endif()
+project( rxcrypt
+  LANGUAGES C CXX )
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#
-set( VERSION 1.0.0 )
+find_program( oorexx_EXECUTABLE rexx )
 
-project( rxcrypt
-  VERSION ${VERSION}
-  LANGUAGES C CXX )
-set( VERSION_STRING "${VERSION}" )
-set( VERSION_STRING "${VERSION_STRING}-${CMAKE_SYSTEM_PROCESSOR}" )
-
-#[[ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#]]
-find_program( REXX_EXECUTABLE rexx )
-if( REXX_EXECUTABLE )
-    message( "++ REXX_EXECUTABLE ${REXX_EXECUTABLE} " )
-    get_filename_component(OOREXX_INSTALL_PREFIX "${REXX_EXECUTABLE}" DIRECTORY )
-    get_filename_component(OOREXX_INSTALL_PREFIX "${OOREXX_INSTALL_PREFIX}" DIRECTORY )
-    message( "++ OOREXX_INSTALL_PREFIX ${OOREXX_INSTALL_PREFIX} " )
-endif()
-
-if( NOT REXX_EXECUTABLE )
+if( NOT oorexx_EXECUTABLE )
   message( FATAL_ERROR "
  unable to continue - ooRexx not available " )
 endif()
 
-message( "++ REXX_EXECUTABLE ${REXX_EXECUTABLE} " )
-get_filename_component(oorexx_PREFIX "${REXX_EXECUTABLE}" DIRECTORY )
+get_filename_component(oorexx_PREFIX  "${oorexx_EXECUTABLE}" DIRECTORY )
 get_filename_component(oorexx_PREFIX  "${oorexx_PREFIX}" DIRECTORY )
-message( "++ oorexx_PREFIX ${oorexx_PREFIX} " )
-
 set( oorexx_INCLUDEDIR "${oorexx_PREFIX}/include" )
 set( oorexx_LIBDIR     "${oorexx_PREFIX}/lib" )
 set( ooRexx_LIBRARIES  "rexx;rexxapi" )
+
+message( "++ oorexx_EXECUTABLE  '${oorexx_EXECUTABLE}' " )
+message( "++ oorexx_PREFIX      '${oorexx_PREFIX}' " )
+message( "++ oorexx_INCLUDEDIR  '${oorexx_INCLUDEDIR}' " )
+message( "++ oorexx_LIBDIR      '${oorexx_INCLUDEDIR}' " )
+message( "++ ooRexx_LIBRARIES   '${ooRexx_LIBRARIES}' " )
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 set( CMAKE_C_STANDARD 11 )
@@ -66,21 +48,9 @@ set( CMAKE_CXX_STANDARD_REQUIRED YES )
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 option( BUILD_UNIVERSAL_BINARIES "" ON )
-
 if( APPLE AND BUILD_UNIVERSAL_BINARIES )
   set( CMAKE_OSX_ARCHITECTURES arm64 x86_64 )
-  set( VERSION_STRING "${VERSION_STRING}-universal" )
 endif()
-
-string( TIMESTAMP  BUILD_TIMESTAMP %Y/%m/%d-%H:%M:%S )
-set( VERSION_STRING "${VERSION_STRING} ${BUILD_TIMESTAMP}" )
-
-message( STATUS "Building ${PROJECT} ${VERSION_STRING}" )
-
-add_compile_definitions(
-  VERSION_STRING="${VERSION_STRING}"
-  ENABLE_SHA224 ENABLE_SHA384
-)
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 option( WITH_IPO "" ON )
@@ -95,7 +65,6 @@ endif()
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 include_directories(
   ${CMAKE_BINARY_DIR}
-  ${CMAKE_SOURCE_DIR}/src/include
   ${CMAKE_SOURCE_DIR}/lib/include
   ${oorexx_INCLUDEDIR}
 )
@@ -106,7 +75,7 @@ link_directories(
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 add_library( rxcrypt SHARED
-  src/rxcrypt.cpp
+  rxcrypt.cpp
   lib/aes.c
   lib/cbc.c
   lib/ctr.c

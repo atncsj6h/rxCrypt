@@ -5,31 +5,26 @@
     http://www.boost.org/LICENSE_1_0.txt)
 */
 
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-*/
-#include <stdlib.h>
-
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#include <errno.h>
 #include <stdint.h>
-#include <sys/types.h>
-#include <strings.h>
-
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
 
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-*/
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #include "oorexxapi.h"
 
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-*/
-#include "shvaccess.h"
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#include "xmalloc.h"
+#include "xstringops.h"
 
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-*/
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #define SD(_s) context->StringData(_s)
 #define SL(_s) context->StringLength(_s)
 
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-*/
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #include "aes.h"
 #include "ecb.h"
 #include "cbc.h"
@@ -40,32 +35,20 @@
 #include "sha1.h"
 #include "sha2.h"
 
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-*/
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 char    RC[] = "RC";
 char    ERROR[] = "ERRROR";
 
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-*/
-RexxRoutine0( RexxObjectPtr, rxcryptVersion )
-{
-    return (RexxObjectPtr)context->NewStringFromAsciiz(VERSION_STRING);
-}
-
-#ifdef ENABLE_CSRAND
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-*/
-RexxRoutine1(uint32_t, rxcsrand, OPTIONAL_uint64_t, Bytes)
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+RexxRoutine1(uint32_t, rxarc4random, OPTIONAL_uint64_t, Bytes)
 {
     printf("Bytes %llu\n", Bytes);
 
     return arc4random();
     return Bytes;
 }
-#endif
 
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-*/
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 RexxRoutine3( RexxObjectPtr, rxaes, RexxStringObject, Action,
     RexxStringObject, iBuffer, RexxStringObject, Key )
 {
@@ -112,8 +95,7 @@ char    rcChar[16];
     return NULLOBJECT;
 }
 
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-*/
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 RexxRoutine3( RexxObjectPtr, rxecb, RexxStringObject, Action,
     RexxStringObject, iBuffer, RexxStringObject, Key )
 {
@@ -182,9 +164,7 @@ char    rcChar[16];
     return NULLOBJECT;
 }
 
-
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-*/
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 RexxRoutine4( RexxObjectPtr, rxcbc, RexxStringObject, Action ,
     RexxStringObject, iBuffer, RexxStringObject, Key, RexxStringObject, IV )
 {
@@ -261,8 +241,7 @@ char    rcChar[16];
     return NULLOBJECT;
 }
 
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-*/
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 RexxRoutine3( RexxObjectPtr, rxofb,
     RexxStringObject, iBuffer, RexxStringObject, Key, RexxStringObject, IV )
 {
@@ -296,9 +275,7 @@ char    rcChar[16];
     return Result ;
 }
 
-
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-*/
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 RexxRoutine1(RexxObjectPtr, rxmd5, RexxStringObject, Input)
 {
     md5Context  md5Context;
@@ -311,8 +288,7 @@ RexxRoutine1(RexxObjectPtr, rxmd5, RexxStringObject, Input)
     return (RexxObjectPtr)context->NewString((char *)md5Hash.bytes, MD5_HASH_SIZE);
 }
 
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-*/
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 RexxRoutine1(RexxObjectPtr, rxsha1, RexxStringObject, Input)
 {
     sha1Context sha1Context;
@@ -325,8 +301,7 @@ RexxRoutine1(RexxObjectPtr, rxsha1, RexxStringObject, Input)
     return (RexxObjectPtr)context->NewString((char *)sha1Hash.bytes, SHA1_HASH_SIZE);
 }
 
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-*/
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 RexxRoutine1(RexxObjectPtr, rxsha256, RexxStringObject, Input)
 {
     sha256Context sha256Context;
@@ -340,9 +315,7 @@ RexxRoutine1(RexxObjectPtr, rxsha256, RexxStringObject, Input)
     return (RexxObjectPtr)context->NewString((char *)sha256Hash.bytes, SHA256_HASH_SIZE);
 }
 
-#ifdef ENABLE_SHA224
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-*/
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 RexxRoutine1(RexxObjectPtr, rxsha224, RexxStringObject, Input)
 {
 
@@ -356,10 +329,8 @@ RexxRoutine1(RexxObjectPtr, rxsha224, RexxStringObject, Input)
 
     return (RexxObjectPtr)context->NewString((char *)sha224Hash.bytes, SHA224_HASH_SIZE);
 }
-#endif
 
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-*/
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 RexxRoutine1(RexxObjectPtr, rxsha512, RexxStringObject, Input)
 {
     sha512Context sha512Context;
@@ -373,9 +344,7 @@ RexxRoutine1(RexxObjectPtr, rxsha512, RexxStringObject, Input)
     return (RexxObjectPtr)context->NewString((char *)sha512Hash.bytes, SHA512_HASH_SIZE);
 }
 
-#ifdef ENABLE_SHA384
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-*/
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 RexxRoutine1(RexxObjectPtr, rxsha384, RexxStringObject, Input)
 {
 
@@ -389,41 +358,28 @@ RexxRoutine1(RexxObjectPtr, rxsha384, RexxStringObject, Input)
 
     return (RexxObjectPtr)context->NewString((char *)sha384Hash.bytes, SHA384_HASH_SIZE);
 }
-#endif
 
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-*/
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 RexxRoutineEntry rxcryptRoutines[] =
 {
-    REXX_TYPED_ROUTINE(cryptVersion,  rxcryptVersion ),
-
-#ifdef  ENABLE_CSRAND
-    REXX_TYPED_ROUTINE(csrand,          rxcsrand ),
-#endif
+    REXX_TYPED_ROUTINE(arc4random,      rxarc4random ),
 
     REXX_TYPED_ROUTINE(aes,             rxaes  ),
     REXX_TYPED_ROUTINE(ecb,             rxecb  ),
     REXX_TYPED_ROUTINE(cbc,             rxcbc  ),
-
     REXX_TYPED_ROUTINE(ofb,             rxofb  ),
 
-    REXX_TYPED_ROUTINE(md5,             rxmd5     ),
-    REXX_TYPED_ROUTINE(sha1,            rxsha1    ),
-    REXX_TYPED_ROUTINE(sha256,          rxsha256  ),
-#ifdef  ENABLE_SHA224
+    REXX_TYPED_ROUTINE(md5,             rxmd5  ),
+    REXX_TYPED_ROUTINE(sha1,            rxsha1 ),
     REXX_TYPED_ROUTINE(sha224,          rxsha224 ),
-#endif
-
-    REXX_TYPED_ROUTINE(sha512,          rxsha512  ),
-#ifdef  ENABLE_SHA384
+    REXX_TYPED_ROUTINE(sha256,          rxsha256 ),
     REXX_TYPED_ROUTINE(sha384,          rxsha384 ),
-#endif
+    REXX_TYPED_ROUTINE(sha512,          rxsha512 ),
 
     REXX_LAST_ROUTINE()
 };
 
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-*/
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 RexxPackageEntry rxcrypt_package_entry =
 {
     STANDARD_PACKAGE_HEADER
@@ -434,10 +390,7 @@ RexxPackageEntry rxcrypt_package_entry =
     NULL,                               // no unloader function (run once at shutdown time)
     rxcryptRoutines,                    // the exported native routines
     NULL                                // no native methods
-
 };
 
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-*/
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 OOREXX_GET_PACKAGE(rxcrypt);
-

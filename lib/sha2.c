@@ -122,10 +122,6 @@ static const uint64_t K512[80] = {
     sha256
 */
 
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    private
-*/
-static
 void    sha256Transform(sha256Context* Context, uint8_t const* Buffer )
 {
     uint32_t    S[8];
@@ -176,7 +172,6 @@ void    sha256Transform(sha256Context* Context, uint8_t const* Buffer )
 }
 
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public
 */
 void sha256Initialise( sha256Context* Context )
 {
@@ -277,7 +272,6 @@ void sha256Last( sha256Context * Context, SHA256_HASH * sha256Hash )
     }
 }
 
-#ifdef  ENABLE_SHA224
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     sha224
     NOTE:
@@ -323,16 +317,11 @@ void sha224Last( sha256Context * Context, SHA224_HASH * sha224Hash )
         STORE32H( Context->state[i], sha224Hash->bytes+(4*i) );
     }
 }
-#endif
 
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     sha512
 */
 
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    private
-*/
-static
 void    sha512Transform( sha512Context* Context, uint8_t const * Buffer )
 {
     uint64_t    S[8];
@@ -379,10 +368,6 @@ void    sha512Transform( sha512Context* Context, uint8_t const * Buffer )
     }
 }
 
-
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public
-*/
 
 void    sha512Initialise( sha512Context* Context )
 {
@@ -483,17 +468,11 @@ void sha512Last( sha512Context * Context, SHA512_HASH * sha512Hash )
     }
 }
 
-
-#ifdef  ENABLE_SHA384
 /*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     sha384
     NOTE:
     since sha512Context and sha384Context have the same layout
     no need to define the sha384Context structure
-*/
-
-/*  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public
 */
 
 void    sha384Initialise( sha512Context * Context )
@@ -529,4 +508,4 @@ void sha384Last( sha512Context * Context, SHA384_HASH * sha384Hash )
         STORE64H( Context->state[i], sha384Hash->bytes+(8*i) );
     }
 }
-#endif
+
